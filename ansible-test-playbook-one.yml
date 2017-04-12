@@ -1,0 +1,42 @@
+---
+
+# install required packages
+
+- hosts: webservers
+#  sudo: yes
+#  remote_user: root
+  tasks:
+  - name: install apache2
+    apt: name=apache2 update_cache=yes state=latest
+  - name: install php
+    apt: name=php update_cache=yes state=latest
+
+
+# create files and directory
+
+    sudo: yes
+    remote_user: root
+  - name: create directory
+    file: path=/var/www/html state=directory
+  - name: create first test website directory
+    file: path=/var/www/html/ansibletestone state=directory mode=0777
+  - name: create index file
+    file: path=/var/www/html/ansibletestone/index.html state=touch mode=0777
+  - lineinfile:
+      dest: /var/www/html/ansibletestone/index.html
+      line: 'This is first test website for ansible'
+      insertafter: EOF
+
+# configure apache
+
+  - copy:
+      src=/var/www/html/ansibledoc/ansible-test-one.conf
+      dest=/etc/apache2/sites-available/
+      owner=root
+      group=root
+      mode=0777
+  - service: 
+      name: apache2
+      state: restarted
+
+...
